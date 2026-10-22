@@ -1,13 +1,486 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Labor intelligent — Manual Lid Inspection</title><style>
-:root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif}*{box-sizing:border-box}body{margin:0;background:#08111d;color:#f1f5fb}main{max-width:1240px;margin:auto;padding:34px 22px 80px}.eyebrow{font-size:12px;letter-spacing:.19em;color:#4dd7c4;font-weight:800}.top{display:flex;align-items:start;justify-content:space-between;gap:25px;flex-wrap:wrap}h1{font-size:clamp(34px,5.8vw,62px);letter-spacing:-.05em;margin:9px 0 10px}h2{font-size:18px;margin:0 0 15px}p{line-height:1.7;color:#a1b5c9;max-width:760px}.pill{display:inline-flex;padding:9px 14px;border-radius:99px;background:#17322f;color:#68e6cb;font-size:12px;font-weight:800;border:1px solid #266d61}.panel{border:1px solid #2c3e50;background:linear-gradient(145deg,#132336,#0e1c2b);border-radius:18px;padding:22px;margin-top:19px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:23px 0}.stat{border:1px solid #284256;background:#122537;border-radius:14px;padding:16px}.stat label{display:block;font-size:12px;color:#9db4c8}.stat strong{display:block;margin-top:8px;font-size:clamp(20px,3.5vw,31px);font-variant-numeric:tabular-nums}.stat small{font-size:11px;color:#7e9bb1}.green{color:#63e0bb}.amber{color:#f9c56a}.red{color:#ff7886}.columns{display:grid;grid-template-columns:1.45fr 1fr;gap:18px}.controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0}button{border:0;border-radius:11px;padding:11px 17px;font-weight:800;background:#39cdb4;color:#06232b;cursor:pointer}button.alt{background:#254258;color:#d7edfa}button:disabled{opacity:.4;cursor:not-allowed}.hint{font-size:13px;color:#8ca5ba}.scene-frame{overflow:hidden;border:1px solid #32516a;border-radius:14px;background:#0a1928}.scene{display:block;width:100%;height:auto}.operator{transition:opacity .3s}.budgetbar{height:12px;background:#253748;border-radius:99px;overflow:hidden;margin:13px 0}.budgetfill{height:100%;width:0;background:linear-gradient(90deg,#36d7bd,#fac46a);border-radius:99px;transition:width .35s}.kv{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #294052;padding:12px 0;font-size:14px}.kv span{color:#a5b7c8}.kv b{font-variant-numeric:tabular-nums}.breakdown{font-size:13px;color:#99b0c4;margin-top:14px}.log{min-height:51px;font-size:14px;color:#9dedda;line-height:1.6}.footer{font-size:12px;color:#8fa6bb;margin-top:20px}.legend{display:flex;gap:15px;flex-wrap:wrap;font-size:12px;color:#b4c8d8;margin-top:15px}.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}.modal{font-size:13px;color:#aabed1}.rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}.rule{border:1px solid #2c4158;border-radius:12px;padding:14px;background:#0d1e2f}.rule b{display:block;color:#eaf8ff;margin-bottom:6px}.rule span{font-size:12px;color:#95afc4}.status-row{display:flex;justify-content:space-between;align-items:center;gap:10px}.sr-only{position:absolute;clip-path:inset(50%);overflow:hidden;width:1px;height:1px;white-space:nowrap}
-@media(max-width:760px){.columns{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.rules{grid-template-columns:1fr}.panel{padding:16px}main{padding:22px 14px 60px}}
-</style></head><body><main>
-<div class="top"><div><div class="eyebrow">FOOD PACKAGING · FEASIBILITY SIMULATION</div><h1>Labor intelligent<span class="green">.</span></h1><p>Manual lid inspection using student intern operators. Each operator presses the lid of a passing jar. A distinctive <b>“BOO”</b> pop indicates a potentially faulty vacuum seal, and the jar is moved into the reject collection zone.</p></div><span class="pill">MANUAL INSPECTION CONCEPT</span></div>
-<div class="stats"><div class="stat"><label>Active operators</label><strong id="operatorsStat">2</strong><small>Student interns</small></div><div class="stat"><label>Monthly labor cost</label><strong id="monthlyStat">€800</strong><small>€400 per operator / month</small></div><div class="stat"><label>Annual labor cost</label><strong id="annualStat">€9,600</strong><small>12-month scenario</small></div><div class="stat"><label>Budget remaining (year 1)</label><strong id="remainingStat" class="green">€100,400</strong><small>From €110,000 planning budget</small></div></div>
-<div class="columns"><section class="panel"><div class="status-row"><h2>Live inspection line</h2><span class="pill" id="lineState">RUNNING</span></div><p style="margin-top:0;font-size:13px">Illustrative animation only — each lid press represents a manual inspection. Rejected jars are routed into the collection bin.</p><div class="scene-frame"><svg id="scene" class="scene" viewBox="0 0 900 460" role="img" aria-label="Animated conveyor line with student operators pressing jar lids and sending faulty jars into a reject zone"><defs><linearGradient id="bg" x2="0" y2="1"><stop stop-color="#183047"/><stop offset="1" stop-color="#0a1826"/></linearGradient><linearGradient id="jarGrad"><stop stop-color="#c3f4ec" stop-opacity=".75"/><stop offset=".5" stop-color="#63c3c2" stop-opacity=".44"/><stop offset="1" stop-color="#a4ded8" stop-opacity=".7"/></linearGradient><pattern id="floor" patternUnits="userSpaceOnUse" width="36" height="36"><path d="M36 0H0V36" fill="none" stroke="#3d5365" opacity=".25"/></pattern><pattern id="belt" patternUnits="userSpaceOnUse" width="55" height="80"><rect width="55" height="80" fill="#354759"/><path d="M1 0V80" stroke="#5f798e" stroke-width="5"/></pattern></defs><rect width="900" height="460" fill="url(#bg)"/><rect width="900" height="460" fill="url(#floor)"/><text x="33" y="44" fill="#99adbe" font-size="15" font-weight="700">INPUT → MANUAL LID CHECK → SORTING</text><rect x="24" y="255" width="850" height="94" rx="15" fill="url(#belt)" stroke="#89a2b6" stroke-width="8"/><rect x="25" y="241" width="850" height="8" rx="4" fill="#b5c6d2"/><rect x="25" y="353" width="850" height="8" rx="4" fill="#b5c6d2"/><text x="40" y="395" fill="#90abc0" font-size="13">SIDE GUARD RAILS</text><g id="operatorsLayer"></g><g id="jarsLayer"></g><path d="M748 341 L748 382" stroke="#f6a6a8" stroke-width="5" stroke-dasharray="5 6"/><rect x="682" y="378" width="136" height="59" rx="9" fill="#612e3e" stroke="#ec7587" stroke-width="4"/><text x="750" y="401" text-anchor="middle" font-size="14" font-weight="800" fill="#ffe2e7">REJECT</text><text x="750" y="418" text-anchor="middle" font-size="12" fill="#ffe2e7">COLLECTION</text><text x="840" y="230" text-anchor="middle" font-size="13" fill="#8ce6c9">GOOD →</text></svg></div>
-<div class="controls"><button id="minus">− Remove operator</button><button id="plus">+ Add operator</button><button id="toggle" class="alt">Pause</button><button id="reset" class="alt">Reset simulation</button></div><div class="log" id="log" aria-live="polite">Two student operators are monitoring the conveyor.</div><div class="legend"><span><i class="dot" style="background:#64e4b3"></i>PASS → Continue</span><span><i class="dot" style="background:#f27485"></i>BOO → Reject</span><span><i class="dot" style="background:#f4be67"></i>Manual lid press</span></div></section>
-<section class="panel"><h2>Labor cost intelligence</h2><div class="kv"><span>Planning budget</span><b>€110,000</b></div><div class="kv"><span>Work hours per week / operator</span><b>32 h</b></div><div class="kv"><span>Average work hours per month</span><b>138.7 h</b></div><div class="kv"><span>Monthly internship stipend</span><b>€400</b></div><div class="kv"><span>Implied hourly cost</span><b>≈ €2.88</b></div><div class="kv"><span>Operators</span><b id="countBreakdown">2</b></div><div class="kv"><span>Total monthly cost</span><b id="monthlyBreakdown">€800</b></div><div class="kv"><span>12-month cost</span><b id="annualBreakdown">€9,600</b></div><div class="kv"><span>Year-one budget remaining</span><b id="remainingBreakdown">€100,400</b></div><h2 style="margin-top:28px">Budget utilization</h2><div class="budgetbar"><div class="budgetfill" id="budgetFill"></div></div><div class="status-row"><span class="hint" id="budgetPct">8.7% of budget</span><span class="hint" id="budgetStatus">Within budget</span></div><p class="breakdown">Cost assumptions follow the supplied estimate. Annualization assumes 12 equal monthly payments per operator. The remaining-budget metric only subtracts internship stipends; it does not include training, supervision, payroll charges, equipment or other operating expenses.</p><div class="kv"><span>Jars manually inspected (demo)</span><b id="inspectedStat">0</b></div><div class="kv"><span>Passed (demo)</span><b class="green" id="passedStat">0</b></div><div class="kv"><span>Rejected (demo)</span><b class="red" id="rejectedStat">0</b></div></section></div>
-<section class="panel"><h2>Manual inspection logic</h2><div class="rules"><div class="rule"><b>01 — Lid press</b><span>An operator presses the lid as the jar reaches their station.</span></div><div class="rule"><b>02 — Acoustic / tactile indication</b><span>If a “BOO” popping response is observed, the jar is flagged as potentially defective. This is a screening assumption, not a validated leak test.</span></div><div class="rule"><b>03 — Manual sorting</b><span>Flagged jars are sent to the reject area; jars that pass continue downstream. Human accuracy, fatigue and throughput still require testing.</span></div></div><p class="footer">Concept demonstration for feasibility discussions. Animation rates and defect frequency are illustrative; the number of operators affects cost and displayed workstations but is not a validated productivity model.</p></section>
-</main><script>
-const $=id=>document.getElementById(id),NS='http://www.w3.org/2000/svg';let operators=2,running=true,jars=[],inspected=0,passed=0,rejected=0,last=0,spawnTime=0,serial=0,activePress=new Map();const cash=n=>'€'+Math.round(n).toLocaleString('en-IE');function el(tag,attrs={},parent){let node=document.createElementNS(NS,tag);Object.entries(attrs).forEach(([k,v])=>node.setAttribute(k,v));parent.append(node);return node}function operatorPositions(){return Array.from({length:operators},(_,i)=>115+(i+.5)*510/operators)}function renderOperators(){let root=$('operatorsLayer');root.replaceChildren();operatorPositions().forEach((x,i)=>{let g=el('g',{class:'operator',transform:`translate(${x},0)`},root);el('ellipse',{cx:0,cy:233,rx:41,ry:9,fill:'#080f1b',opacity:'.35'},g);el('circle',{cx:0,cy:107,r:22,fill:'#f2b891'},g);el('path',{d:'M-22 103Q-13 70 14 87Q31 93 22 112L14 97Z',fill:'#1c344a'},g);el('rect',{x:-30,y:133,width:60,height:77,rx:17,fill:['#36b9ba','#73a0ed','#ac90ec','#dfa374'][i%4],stroke:'#b6d7ed','stroke-width':2},g);el('path',{d:'M-18 210L-20 241M18 210L20 241',stroke:'#9aaec6','stroke-width':13,'stroke-linecap':'round'},g);el('path',{d:'M-27 148L-41 190L-13 225',stroke:'#efb58e','stroke-width':12,'stroke-linecap':'round',fill:'none'},g);let hand=el('g',{id:'hand'+i},g);el('path',{d:'M27 148L39 182L10 222',stroke:'#efb58e','stroke-width':12,'stroke-linecap':'round',fill:'none'},hand);el('circle',{cx:10,cy:222,r:8,fill:'#efb58e'},hand);el('rect',{x:-22,y:135,width:44,height:15,rx:6,fill:'#fff',opacity:'.16'},g);let t=el('text',{x:0,y:66,'text-anchor':'middle',fill:'#e9f6ff','font-size':13,'font-weight':800},g);t.textContent='OPERATOR '+(i+1);});}function update(){let annual=operators*400*12,remain=110000-annual,pct=annual/110000*100;$('operatorsStat').textContent=operators;$('monthlyStat').textContent=cash(operators*400);$('annualStat').textContent=cash(annual);$('remainingStat').textContent=cash(remain);$('remainingStat').className=remain>=0?'green':'red';$('countBreakdown').textContent=operators;$('monthlyBreakdown').textContent=cash(operators*400);$('annualBreakdown').textContent=cash(annual);$('remainingBreakdown').textContent=cash(remain);$('budgetFill').style.width=Math.min(pct,100)+'%';$('budgetPct').textContent=pct.toFixed(1)+'% of budget';$('budgetStatus').textContent=remain>=0?'Within budget':'Over budget';$('minus').disabled=operators<=1;$('plus').disabled=operators>=20;$('inspectedStat').textContent=inspected;$('passedStat').textContent=passed;$('rejectedStat').textContent=rejected;}function change(delta){operators=Math.max(1,Math.min(20,operators+delta));jars.forEach(j=>j.node.remove());jars=[];activePress.clear();renderOperators();update();$('log').textContent=`${operators} student operator${operators===1?'':'s'} assigned · ${cash(operators*400)} / month.`}function spawn(){let root=$('jarsLayer');let g=el('g',{transform:'translate(-48,0)'},root);el('ellipse',{cx:0,cy:323,rx:19,ry:5,fill:'#071725',opacity:'.4'},g);el('rect',{x:-18,y:277,width:36,height:43,rx:8,fill:'url(#jarGrad)',stroke:'#ccefe9','stroke-width':2},g);el('rect',{x:-15,y:267,width:30,height:13,rx:4,fill:'#f3b56c',stroke:'#ffe1ab','stroke-width':2},g);el('rect',{x:-14,y:292,width:28,height:13,rx:2,fill:'#e9f6ef',opacity:'.68'},g);jars.push({node:g,x:-48,bad:serial++%5===2,assigned:(serial-1)%operators,checked:false,done:false,rejectStart:0,pressIndex:-1});}function frame(t){let dt=Math.min(.05,(t-last)/1000||0);last=t;if(running){spawnTime+=dt;if(spawnTime>2.35){spawnTime=0;spawn()}let positions=operatorPositions();for(const j of [...jars]){j.x+=74*dt;if(!j.checked){let idx=j.assigned; if(Math.abs(j.x-positions[idx])>=7)idx=-1;if(idx>=0){j.checked=true;j.pressIndex=idx;inspected++;let hand=$('hand'+idx);if(hand){hand.setAttribute('transform','translate(0,35)');setTimeout(()=>hand.setAttribute('transform','translate(0,0)'),240)}if(j.bad){$('log').textContent=`BOO! Operator ${idx+1} detected a suspicious lid. Divert jar to reject collection.`;let text=el('text',{x:0,y:259,'text-anchor':'middle',fill:'#ff8895','font-size':18,'font-weight':900},j.node);text.textContent='BOO!';}else {$('log').textContent=`Operator ${idx+1} pressed the lid. No pop detected — jar passes screening.`;let text=el('text',{x:0,y:259,'text-anchor':'middle',fill:'#74efbe','font-size':15,'font-weight':900},j.node);text.textContent='PASS';}update();}}if(j.bad&&j.checked&&!j.done&&j.x>=744){j.done=true;j.rejectStart=t;}if(j.done){let p=Math.min(1,(t-j.rejectStart)/800);j.node.setAttribute('transform',`translate(${j.x},${p*112}) rotate(${p*15})`);if(p===1){rejected++;j.node.remove();jars.splice(jars.indexOf(j),1);update();}}else{j.node.setAttribute('transform',`translate(${j.x},0)`);if(j.x>922){passed++;j.node.remove();jars.splice(jars.indexOf(j),1);update();}}}}requestAnimationFrame(frame)}$('plus').onclick=()=>change(1);$('minus').onclick=()=>change(-1);$('toggle').onclick=()=>{running=!running;$('toggle').textContent=running?'Pause':'Resume';$('lineState').textContent=running?'RUNNING':'PAUSED'};$('reset').onclick=()=>{jars.forEach(j=>j.node.remove());jars=[];inspected=passed=rejected=serial=0;spawnTime=0;update();$('log').textContent='Simulation reset. Operators are ready.'};renderOperators();update();spawn();requestAnimationFrame(frame);
-</script></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Labor intelligent — Manual Lid Inspection</title>
+  <style>
+    :root{
+      color-scheme:dark;
+      font-family:Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,sans-serif;
+      --bg:#08111d;
+      --panel:#102031;
+      --panel2:#0e1b2a;
+      --line:#284256;
+      --text:#f1f5fb;
+      --muted:#9fb4c7;
+      --green:#63e0bb;
+      --red:#ff7886;
+      --amber:#f9c56a;
+      --teal:#3ad3bb;
+    }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--text)}
+    main{max-width:1280px;margin:auto;padding:34px 22px 80px}
+    .eyebrow{font-size:12px;letter-spacing:.19em;color:#4dd7c4;font-weight:800}
+    .top{display:flex;align-items:start;justify-content:space-between;gap:25px;flex-wrap:wrap}
+    h1{font-size:clamp(34px,5.8vw,62px);letter-spacing:-.05em;margin:9px 0 10px}
+    h2{font-size:18px;margin:0 0 15px}
+    p{line-height:1.7;color:var(--muted);max-width:780px}
+    .pill{display:inline-flex;padding:9px 14px;border-radius:99px;background:#17322f;color:#68e6cb;font-size:12px;font-weight:800;border:1px solid #266d61}
+    .panel{border:1px solid #2c3e50;background:linear-gradient(145deg,#132336,#0e1c2b);border-radius:18px;padding:22px;margin-top:19px}
+    .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin:23px 0}
+    .stat{border:1px solid var(--line);background:#122537;border-radius:14px;padding:16px}
+    .stat label{display:block;font-size:12px;color:#9db4c8}
+    .stat strong{display:block;margin-top:8px;font-size:clamp(20px,3.5vw,31px);font-variant-numeric:tabular-nums}
+    .stat small{font-size:11px;color:#7e9bb1}
+    .green{color:var(--green)}
+    .amber{color:var(--amber)}
+    .red{color:var(--red)}
+    .columns{display:grid;grid-template-columns:1.55fr 1fr;gap:18px}
+    .controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px;margin:14px 0}
+    button{border:0;border-radius:11px;padding:11px 17px;font-weight:800;background:var(--teal);color:#06232b;cursor:pointer}
+    button.alt{background:#254258;color:#d7edfa}
+    button.warn{background:#f26d7d;color:white}
+    button.good{background:#60d79c;color:#072d1c}
+    button:disabled{opacity:.45;cursor:not-allowed}
+    .hint{font-size:13px;color:#8ca5ba}
+    .scene-frame{overflow:hidden;border:1px solid #32516a;border-radius:14px;background:#0a1928}
+    .scene{display:block;width:100%;height:auto}
+    .budgetbar{height:12px;background:#253748;border-radius:99px;overflow:hidden;margin:13px 0}
+    .budgetfill{height:100%;width:0;background:linear-gradient(90deg,#36d7bd,#fac46a);border-radius:99px;transition:width .35s}
+    .kv{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #294052;padding:12px 0;font-size:14px}
+    .kv span{color:#a5b7c8}
+    .kv b{font-variant-numeric:tabular-nums}
+    .breakdown{font-size:13px;color:#99b0c4;margin-top:14px}
+    .log{min-height:51px;font-size:14px;color:#9dedda;line-height:1.6}
+    .footer{font-size:12px;color:#8fa6bb;margin-top:20px}
+    .legend{display:flex;gap:15px;flex-wrap:wrap;font-size:12px;color:#b4c8d8;margin-top:15px}
+    .dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:5px}
+    .rules{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+    .rule{border:1px solid #2c4158;border-radius:12px;padding:14px;background:#0d1e2f}
+    .rule b{display:block;color:#eaf8ff;margin-bottom:6px}
+    .rule span{font-size:12px;color:#95afc4}
+    .status-row{display:flex;justify-content:space-between;align-items:center;gap:10px}
+    .scene-note{font-size:12px;color:#8fa6bb;margin-top:8px}
+    @media(max-width:880px){.columns{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.rules{grid-template-columns:1fr}.panel{padding:16px}main{padding:22px 14px 60px}}
+  </style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div>
+      <div class="eyebrow">FOOD PACKAGING · FEASIBILITY SIMULATION</div>
+      <h1>Labor intelligent<span class="green">.</span></h1>
+      <p>
+        Manual lid inspection using student intern operators. <b>One operator manages one conveyor line.</b>
+        When you add an operator, the animation also adds a new inspection line. Operators press the top of each passing jar.
+        If a distinct <b>“BOO”</b> pop is detected, the operator pushes that jar into the reject area.
+      </p>
+    </div>
+    <span class="pill">MANUAL INSPECTION CONCEPT</span>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><label>Active operators</label><strong id="operatorsStat">2</strong><small>One operator per line</small></div>
+    <div class="stat"><label>Active lines</label><strong id="linesStat">2</strong><small>One line per operator</small></div>
+    <div class="stat"><label>Monthly labor cost</label><strong id="monthlyStat">€800</strong><small>€400 per operator / month</small></div>
+    <div class="stat"><label>Budget remaining (year 1)</label><strong id="remainingStat" class="green">€100,400</strong><small>From €110,000 planning budget</small></div>
+  </div>
+
+  <div class="columns">
+    <section class="panel">
+      <div class="status-row"><h2>Live inspection lines</h2><span class="pill" id="lineState">RUNNING</span></div>
+      <p style="margin-top:0;font-size:13px">
+        Illustrative animation only. Each line has one dedicated operator. Good jars continue downstream, while defective jars trigger a BOO response and are manually pushed into the reject area.
+      </p>
+      <div class="scene-frame">
+        <svg id="scene" class="scene" viewBox="0 0 980 460" role="img" aria-label="Animated production lines with one operator per line manually inspecting jar lids and pushing defective jars into the reject area"></svg>
+      </div>
+      <div class="scene-note">Use the buttons below to add operators / lines, add extra good or defective jars, pause the animation, or reset the simulation.</div>
+      <div class="controls">
+        <button id="minus">− Remove operator / line</button>
+        <button id="plus">+ Add operator / line</button>
+        <button id="addGood" class="good">+ Add good jar</button>
+        <button id="addBad" class="warn">+ Add defective jar</button>
+        <button id="toggle" class="alt">Pause</button>
+        <button id="reset" class="alt">Reset simulation</button>
+      </div>
+      <div class="log" id="log" aria-live="polite">Two student operators are each monitoring one production line.</div>
+      <div class="legend">
+        <span><i class="dot" style="background:#64e4b3"></i>PASS → Continue downstream</span>
+        <span><i class="dot" style="background:#f27485"></i>BOO → Defective jar</span>
+        <span><i class="dot" style="background:#f4be67"></i>Manual lid press</span>
+        <span><i class="dot" style="background:#6ec6ff"></i>Manual push to reject area</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Labor cost intelligence</h2>
+      <div class="kv"><span>Planning budget</span><b>€110,000</b></div>
+      <div class="kv"><span>Work hours per week / operator</span><b>32 h</b></div>
+      <div class="kv"><span>Average work hours per month</span><b>138.7 h</b></div>
+      <div class="kv"><span>Monthly internship stipend</span><b>€400</b></div>
+      <div class="kv"><span>Implied hourly cost</span><b>≈ €2.88</b></div>
+      <div class="kv"><span>Operators</span><b id="countBreakdown">2</b></div>
+      <div class="kv"><span>Lines</span><b id="lineBreakdown">2</b></div>
+      <div class="kv"><span>Total monthly cost</span><b id="monthlyBreakdown">€800</b></div>
+      <div class="kv"><span>12-month cost</span><b id="annualBreakdown">€9,600</b></div>
+      <div class="kv"><span>Year-one budget remaining</span><b id="remainingBreakdown">€100,400</b></div>
+      <h2 style="margin-top:28px">Budget utilization</h2>
+      <div class="budgetbar"><div class="budgetfill" id="budgetFill"></div></div>
+      <div class="status-row"><span class="hint" id="budgetPct">8.7% of budget</span><span class="hint" id="budgetStatus">Within budget</span></div>
+      <p class="breakdown">
+        Cost assumptions follow the supplied estimate. Annualization assumes 12 equal monthly payments per operator.
+        The remaining-budget metric only subtracts internship stipends; it does not include training, supervision, payroll charges,
+        equipment or other operating expenses.
+      </p>
+      <div class="kv"><span>Jars manually inspected (demo)</span><b id="inspectedStat">0</b></div>
+      <div class="kv"><span>Passed (demo)</span><b class="green" id="passedStat">0</b></div>
+      <div class="kv"><span>Rejected (demo)</span><b class="red" id="rejectedStat">0</b></div>
+    </section>
+  </div>
+
+  <section class="panel">
+    <h2>Manual inspection logic</h2>
+    <div class="rules">
+      <div class="rule"><b>01 — One operator, one line</b><span>Each production line has its own operator. Increasing operator count immediately increases the number of visible inspection lines.</span></div>
+      <div class="rule"><b>02 — Lid press and BOO response</b><span>The operator presses the lid at the inspection station. A BOO response is treated as a defect signal for this concept demo.</span></div>
+      <div class="rule"><b>03 — Manual reject push</b><span>When a defect is detected, the operator pushes the jar into the reject area. Throughput, fatigue and actual detection accuracy still require testing.</span></div>
+    </div>
+    <p class="footer">Concept demonstration for feasibility discussions. Animation speed, defect frequency and line capacity are illustrative. The number of operators changes cost and the number of lines shown, but does not represent a validated productivity model.</p>
+  </section>
+</main>
+
+<script>
+const $ = id => document.getElementById(id);
+const NS = 'http://www.w3.org/2000/svg';
+const BUDGET = 110000;
+const STIPEND = 400;
+const HOURS_PER_WEEK = 32;
+const HOURS_PER_MONTH = 138.7;
+const scene = $('scene');
+
+let operators = 2;
+let running = true;
+let jars = [];
+let inspected = 0;
+let passed = 0;
+let rejected = 0;
+let lastTs = 0;
+let autoSpawn = 0;
+let serial = 0;
+
+const skinTones = ['#f6d4c2','#8d5524','#e0ac69','#c68642','#ffdbac','#a56b46','#b97a56','#6d4226'];
+const shirtColors = ['#36b9ba','#73a0ed','#ac90ec','#dfa374','#52cc8b','#f28f8f','#66c2ff','#cab36e'];
+const hairColors = ['#1c344a','#2a1a10','#4e2f1d','#10151c','#4f4956','#2f2222','#3b2d25','#0f0f12'];
+const laneX = 85;
+const laneW = 780;
+const laneH = 58;
+const stationX = 310;
+const rejectBinX = 735;
+const laneGap = 150;
+const topPad = 118;
+
+let operatorRefs = [];
+let jarsLayer = null;
+
+function cash(n){
+  return '€' + Math.round(n).toLocaleString('en-IE');
+}
+
+function make(tag, attrs = {}, parent){
+  const node = document.createElementNS(NS, tag);
+  for (const [k,v] of Object.entries(attrs)) node.setAttribute(k, v);
+  if (parent) parent.appendChild(node);
+  return node;
+}
+
+function lineCount(){ return operators; }
+function laneY(index){ return topPad + index * laneGap; }
+function sceneHeight(){ return Math.max(460, topPad + (lineCount() - 1) * laneGap + 170); }
+
+function chooseLine(){
+  const counts = Array.from({length: lineCount()}, (_, i) => jars.filter(j => j.line === i && !j.finished).length);
+  let min = 0;
+  for (let i = 1; i < counts.length; i++) if (counts[i] < counts[min]) min = i;
+  return min;
+}
+
+function setLog(message){ $('log').textContent = message; }
+
+function updateStats(){
+  const annual = operators * STIPEND * 12;
+  const monthly = operators * STIPEND;
+  const remaining = BUDGET - annual;
+  const pct = annual / BUDGET * 100;
+
+  $('operatorsStat').textContent = operators;
+  $('linesStat').textContent = lineCount();
+  $('monthlyStat').textContent = cash(monthly);
+  $('remainingStat').textContent = cash(remaining);
+  $('remainingStat').className = remaining >= 0 ? 'green' : 'red';
+
+  $('countBreakdown').textContent = operators;
+  $('lineBreakdown').textContent = lineCount();
+  $('monthlyBreakdown').textContent = cash(monthly);
+  $('annualBreakdown').textContent = cash(annual);
+  $('remainingBreakdown').textContent = cash(remaining);
+  $('budgetFill').style.width = Math.min(pct, 100) + '%';
+  $('budgetPct').textContent = pct.toFixed(1) + '% of budget';
+  $('budgetStatus').textContent = remaining >= 0 ? 'Within budget' : 'Over budget';
+  $('inspectedStat').textContent = inspected;
+  $('passedStat').textContent = passed;
+  $('rejectedStat').textContent = rejected;
+  $('minus').disabled = operators <= 1;
+  $('plus').disabled = operators >= 8;
+}
+
+function renderScene(){
+  operatorRefs = [];
+  scene.innerHTML = '';
+  scene.setAttribute('viewBox', `0 0 980 ${sceneHeight()}`);
+
+  const defs = make('defs', {}, scene);
+  const bg = make('linearGradient', {id:'bg', x1:'0', y1:'0', x2:'0', y2:'1'}, defs);
+  make('stop', {'stop-color':'#183047'}, bg);
+  make('stop', {offset:'1', 'stop-color':'#0a1826'}, bg);
+  const jarGrad = make('linearGradient', {id:'jarGrad'}, defs);
+  make('stop', {'stop-color':'#c3f4ec', 'stop-opacity':'.75'}, jarGrad);
+  make('stop', {offset:'.5', 'stop-color':'#63c3c2', 'stop-opacity':'.44'}, jarGrad);
+  make('stop', {offset:'1', 'stop-color':'#a4ded8', 'stop-opacity':'.7'}, jarGrad);
+  const belt = make('pattern', {id:'belt', patternUnits:'userSpaceOnUse', width:'55', height:'80'}, defs);
+  make('rect', {width:'55', height:'80', fill:'#354759'}, belt);
+  make('path', {d:'M1 0V80', stroke:'#5f798e', 'stroke-width':'5'}, belt);
+  const floor = make('pattern', {id:'floor', patternUnits:'userSpaceOnUse', width:'36', height:'36'}, defs);
+  make('path', {d:'M36 0H0V36', fill:'none', stroke:'#3d5365', opacity:'.25'}, floor);
+
+  make('rect', {width:'980', height:String(sceneHeight()), fill:'url(#bg)'}, scene);
+  make('rect', {width:'980', height:String(sceneHeight()), fill:'url(#floor)'}, scene);
+  const title = make('text', {x:'32', y:'42', fill:'#99adbe', 'font-size':'15', 'font-weight':'700'}, scene);
+  title.textContent = 'INPUT → MANUAL LID PRESS → PASS / REJECT';
+
+  for (let i = 0; i < lineCount(); i++) {
+    const y = laneY(i);
+    const lineLabel = make('text', {x:'32', y:String(y - 18), fill:'#7fd8cb', 'font-size':'14', 'font-weight':'800'}, scene);
+    lineLabel.textContent = `LINE ${i + 1}`;
+
+    make('rect', {x:String(laneX), y:String(y), width:String(laneW), height:String(laneH), rx:'15', fill:'url(#belt)', stroke:'#89a2b6', 'stroke-width':'8'}, scene);
+    make('rect', {x:String(laneX + 1), y:String(y - 14), width:String(laneW), height:'8', rx:'4', fill:'#b5c6d2'}, scene);
+    make('rect', {x:String(laneX + 1), y:String(y + laneH + 6), width:String(laneW), height:'8', rx:'4', fill:'#b5c6d2'}, scene);
+    const guardText = make('text', {x:'43', y:String(y + 98), fill:'#90abc0', 'font-size':'12'}, scene);
+    guardText.textContent = 'SIDE GUARD RAILS';
+
+    make('line', {x1:String(rejectBinX + 22), y1:String(y + 24), x2:String(rejectBinX + 22), y2:String(y + 84), stroke:'#f6a6a8', 'stroke-width':'5', 'stroke-dasharray':'5 6'}, scene);
+    make('rect', {x:String(rejectBinX - 44), y:String(y + 88), width:'132', height:'52', rx:'10', fill:'#612e3e', stroke:'#ec7587', 'stroke-width':'4'}, scene);
+    const binLabel = make('text', {x:String(rejectBinX + 22), y:String(y + 109), 'text-anchor':'middle', 'font-size':'13', 'font-weight':'800', fill:'#ffe2e7'}, scene);
+    binLabel.textContent = 'REJECT AREA';
+    const goodText = make('text', {x:String(laneX + laneW - 20), y:String(y - 16), 'text-anchor':'end', 'font-size':'12', fill:'#8ce6c9'}, scene);
+    goodText.textContent = 'GOOD →';
+
+    const g = make('g', {transform:`translate(${stationX - 74},${y - 92})`}, scene);
+    const shadow = make('ellipse', {cx:'25', cy:'140', rx:'43', ry:'9', fill:'#080f1b', opacity:'.35'}, g);
+    const skin = skinTones[i % skinTones.length];
+    const shirt = shirtColors[i % shirtColors.length];
+    const hair = hairColors[i % hairColors.length];
+    make('circle', {cx:'25', cy:'16', r:'19', fill:skin}, g);
+    make('path', {d:'M6 12Q13 -9 39 1Q56 9 45 25L35 12Z', fill:hair}, g);
+    make('rect', {x:'-5', y:'42', width:'60', height:'74', rx:'17', fill:shirt, stroke:'#b6d7ed', 'stroke-width':'2'}, g);
+    make('path', {d:'M8 117L2 149', stroke:'#9aaec6', 'stroke-width':'12', 'stroke-linecap':'round'}, g);
+    make('path', {d:'M42 117L48 149', stroke:'#9aaec6', 'stroke-width':'12', 'stroke-linecap':'round'}, g);
+    make('path', {d:'M-1 60L-24 95L0 126', stroke:skin, 'stroke-width':'12', 'stroke-linecap':'round', fill:'none'}, g);
+    const arm = make('g', {id:`arm${i}`}, g);
+    make('path', {d:'M51 61L78 90L72 128', stroke:skin, 'stroke-width':'12', 'stroke-linecap':'round', fill:'none'}, arm);
+    make('circle', {cx:'72', cy:'128', r:'8', fill:skin}, arm);
+    make('rect', {x:'-2', y:'46', width:'54', height:'14', rx:'6', fill:'#fff', opacity:'.16'}, g);
+    const name = make('text', {x:'25', y:'-18', 'text-anchor':'middle', fill:'#e9f6ff', 'font-size':'12', 'font-weight':'800'}, g);
+    name.textContent = `OPERATOR ${i + 1}`;
+    const note = make('text', {x:'25', y:'-2', 'text-anchor':'middle', fill:'#94b3c8', 'font-size':'10'}, g);
+    note.textContent = '1 line each';
+    operatorRefs.push({arm, mode:'idle'});
+  }
+
+  jarsLayer = make('g', {id:'jarsLayer'}, scene);
+}
+
+function setOperatorMode(line, mode){
+  const ref = operatorRefs[line];
+  if (!ref) return;
+  ref.mode = mode;
+  const map = {
+    idle: 'translate(0,0)',
+    press: 'translate(0,14)',
+    push: 'translate(26,20)'
+  };
+  ref.arm.setAttribute('transform', map[mode] || map.idle);
+}
+
+function clearActions(){
+  operatorRefs.forEach((_, i) => setOperatorMode(i, 'idle'));
+}
+
+function buildJar(line, bad=false){
+  const g = make('g', {}, jarsLayer);
+  make('ellipse', {cx:'0', cy:'0', rx:'19', ry:'5', fill:'#071725', opacity:'.4'}, g);
+  make('rect', {x:'-18', y:'-46', width:'36', height:'43', rx:'8', fill:'url(#jarGrad)', stroke:'#ccefe9', 'stroke-width':'2'}, g);
+  make('rect', {x:'-15', y:'-56', width:'30', height:'13', rx:'4', fill:'#f3b56c', stroke:'#ffe1ab', 'stroke-width':'2'}, g);
+  make('rect', {x:'-14', y:'-31', width:'28', height:'13', rx:'2', fill:'#e9f6ef', opacity:'.68'}, g);
+  const label = make('text', {x:'0', y:'-62', 'text-anchor':'middle', 'font-size':'16', 'font-weight':'900', opacity:'0'}, g);
+  const jar = {
+    id: serial++,
+    line,
+    bad,
+    x: laneX - 32,
+    y: laneY(line) + 48,
+    state: 'move',
+    timer: 0,
+    finished: false,
+    node: g,
+    label,
+    angle: 0
+  };
+  jars.push(jar);
+  placeJar(jar);
+  return jar;
+}
+
+function placeJar(jar){
+  jar.node.setAttribute('transform', `translate(${jar.x},${jar.y}) rotate(${jar.angle})`);
+}
+
+function showJarLabel(jar, text, color){
+  jar.label.textContent = text;
+  jar.label.setAttribute('fill', color);
+  jar.label.setAttribute('opacity', '1');
+}
+
+function addJar(type){
+  const line = chooseLine();
+  const bad = type === 'bad';
+  buildJar(line, bad);
+  setLog(`${bad ? 'Defective' : 'Good'} jar added to Line ${line + 1}.`);
+}
+
+function changeOperators(delta){
+  operators = Math.max(1, Math.min(8, operators + delta));
+  resetSimulation(`Simulation reset. ${operators} operator${operators===1?'':'s'} now manage ${lineCount()} production line${lineCount()===1?'':'s'}.`);
+}
+
+function resetSimulation(message='Simulation reset. Operators are ready.'){
+  jars.forEach(j => j.node.remove());
+  jars = [];
+  inspected = 0;
+  passed = 0;
+  rejected = 0;
+  serial = 0;
+  autoSpawn = 0;
+  clearActions();
+  renderScene();
+  updateStats();
+  setLog(message);
+  // Seed one jar per line for immediate motion
+  for (let i = 0; i < lineCount(); i++) {
+    const jar = buildJar(i, false);
+    jar.x -= i * 80;
+    placeJar(jar);
+  }
+}
+
+function updateJar(jar, dt){
+  const speed = 110;
+  if (jar.state === 'move') {
+    jar.x += speed * dt;
+    if (jar.x >= stationX) {
+      jar.x = stationX;
+      jar.state = 'inspect';
+      jar.timer = 0;
+      inspected++;
+      setOperatorMode(jar.line, 'press');
+      setLog(`Operator ${jar.line + 1} is pressing the lid on Line ${jar.line + 1}.`);
+      updateStats();
+    }
+  } else if (jar.state === 'inspect') {
+    jar.timer += dt;
+    if (jar.timer >= 0.48) {
+      if (jar.bad) {
+        jar.state = 'reject';
+        jar.timer = 0;
+        setOperatorMode(jar.line, 'push');
+        showJarLabel(jar, 'BOO!', '#ff8895');
+        setLog(`BOO! Operator ${jar.line + 1} detected a defective jar on Line ${jar.line + 1} and is pushing it to the reject area.`);
+      } else {
+        jar.state = 'pass';
+        jar.timer = 0;
+        setOperatorMode(jar.line, 'idle');
+        showJarLabel(jar, 'PASS', '#74efbe');
+        setLog(`Operator ${jar.line + 1} cleared a good jar on Line ${jar.line + 1}.`);
+      }
+    }
+  } else if (jar.state === 'pass') {
+    jar.x += speed * dt;
+    if (jar.x > 925) {
+      jar.finished = true;
+      passed++;
+      updateStats();
+      jar.node.remove();
+    }
+  } else if (jar.state === 'reject') {
+    jar.timer += dt;
+    if (jar.timer < 0.22) {
+      jar.x = stationX + jar.timer * 45;
+      jar.y = laneY(jar.line) + 48;
+    } else {
+      const p = Math.min(1, (jar.timer - 0.22) / 0.9);
+      jar.x = stationX + 10 + p * (rejectBinX - stationX + 12);
+      jar.y = laneY(jar.line) + 48 + p * 92;
+      jar.angle = p * 18;
+      if (p >= 1) {
+        jar.finished = true;
+        rejected++;
+        updateStats();
+        setOperatorMode(jar.line, 'idle');
+        jar.node.remove();
+      }
+    }
+  }
+  placeJar(jar);
+}
+
+function animate(ts){
+  const dt = Math.min(0.05, (ts - lastTs) / 1000 || 0);
+  lastTs = ts;
+  if (running) {
+    autoSpawn += dt;
+    if (autoSpawn > 2.8) {
+      autoSpawn = 0;
+      const autoLine = serial % lineCount();
+      buildJar(autoLine, serial % 6 === 2);
+    }
+
+    for (const jar of [...jars]) {
+      updateJar(jar, dt);
+      if (jar.finished) jars.splice(jars.indexOf(jar), 1);
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+$('plus').onclick = () => changeOperators(1);
+$('minus').onclick = () => changeOperators(-1);
+$('addGood').onclick = () => addJar('good');
+$('addBad').onclick = () => addJar('bad');
+$('toggle').onclick = () => {
+  running = !running;
+  $('toggle').textContent = running ? 'Pause' : 'Resume';
+  $('lineState').textContent = running ? 'RUNNING' : 'PAUSED';
+  if (running) setLog('Simulation resumed.');
+  else setLog('Simulation paused.');
+};
+$('reset').onclick = () => resetSimulation();
+
+renderScene();
+resetSimulation('Two student operators are each monitoring one production line.');
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>
