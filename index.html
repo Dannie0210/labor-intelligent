@@ -45,8 +45,8 @@
     button.good{background:#60d79c;color:#072d1c}
     button:disabled{opacity:.45;cursor:not-allowed}
     .hint{font-size:13px;color:#8ca5ba}
-    .scene-frame{overflow:hidden;border:1px solid #32516a;border-radius:14px;background:#0a1928}
-    .scene{display:block;width:100%;height:auto}
+    .scene-frame{overflow:auto;max-height:640px;overscroll-behavior:contain;border:1px solid #32516a;border-radius:14px;background:#0a1928}
+    .scene{display:block;width:100%;min-width:760px;height:auto}
     .budgetbar{height:12px;background:#253748;border-radius:99px;overflow:hidden;margin:13px 0}
     .budgetfill{height:100%;width:0;background:linear-gradient(90deg,#36d7bd,#fac46a);border-radius:99px;transition:width .35s}
     .kv{display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid #294052;padding:12px 0;font-size:14px}
@@ -97,7 +97,7 @@
       <div class="scene-frame">
         <svg id="scene" class="scene" viewBox="0 0 980 460" role="img" aria-label="Animated production lines with one operator per line manually inspecting jar lids and pushing defective jars into the reject area"></svg>
       </div>
-      <div class="scene-note">Use the buttons below to add operators / lines, add extra good or defective jars, pause the animation, or reset the simulation.</div>
+      <div class="scene-note">Add up to 22 operators / lines (the 12-month stipend-only budget limit). Add good or defective jars, pause, or reset. Scroll through the lanes to see all operators.</div>
       <div class="controls">
         <button id="minus">− Remove operator / line</button>
         <button id="plus">+ Add operator / line</button>
@@ -178,7 +178,7 @@ const laneX = 85;
 const laneW = 780;
 const laneH = 58;
 const stationX = 310;
-const rejectBinX = 735;
+const rejectBinX = 394; // A local reject bin beside each operator.
 const laneGap = 150;
 const topPad = 118;
 
@@ -233,7 +233,7 @@ function updateStats(){
   $('passedStat').textContent = passed;
   $('rejectedStat').textContent = rejected;
   $('minus').disabled = operators <= 1;
-  $('plus').disabled = operators >= 8;
+  $('plus').disabled = operators >= 22;
 }
 
 function renderScene(){
@@ -267,11 +267,14 @@ function renderScene(){
 
     make('rect', {x:String(laneX), y:String(y), width:String(laneW), height:String(laneH), rx:'15', fill:'url(#belt)', stroke:'#89a2b6', 'stroke-width':'8'}, scene);
     make('rect', {x:String(laneX + 1), y:String(y - 14), width:String(laneW), height:'8', rx:'4', fill:'#b5c6d2'}, scene);
-    make('rect', {x:String(laneX + 1), y:String(y + laneH + 6), width:String(laneW), height:'8', rx:'4', fill:'#b5c6d2'}, scene);
+    // Leave a guided opening beside the operator so defective jars can be pushed to the local bin.
+    make('rect', {x:String(laneX + 1), y:String(y + laneH + 6), width:String(stationX - laneX - 43), height:'8', rx:'4', fill:'#b5c6d2'}, scene);
+    make('rect', {x:String(rejectBinX + 87), y:String(y + laneH + 6), width:String(laneX + laneW - (rejectBinX + 87)), height:'8', rx:'4', fill:'#b5c6d2'}, scene);
     const guardText = make('text', {x:'43', y:String(y + 98), fill:'#90abc0', 'font-size':'12'}, scene);
     guardText.textContent = 'SIDE GUARD RAILS';
 
-    make('line', {x1:String(rejectBinX + 22), y1:String(y + 24), x2:String(rejectBinX + 22), y2:String(y + 84), stroke:'#f6a6a8', 'stroke-width':'5', 'stroke-dasharray':'5 6'}, scene);
+    // Short curved route from the inspection point to the reject box alongside the operator.
+    make('path', {d:`M${stationX + 26} ${y + 55} Q${rejectBinX + 22} ${y + 76} ${rejectBinX + 22} ${y + 99}`, stroke:'#8ab9d3', 'stroke-width':'3', 'stroke-dasharray':'5 5', fill:'none', opacity:'.8'}, scene);
     make('rect', {x:String(rejectBinX - 44), y:String(y + 88), width:'132', height:'52', rx:'10', fill:'#612e3e', stroke:'#ec7587', 'stroke-width':'4'}, scene);
     const binLabel = make('text', {x:String(rejectBinX + 22), y:String(y + 109), 'text-anchor':'middle', 'font-size':'13', 'font-weight':'800', fill:'#ffe2e7'}, scene);
     binLabel.textContent = 'REJECT AREA';
@@ -289,30 +292,35 @@ function renderScene(){
     make('path', {d:'M8 117L2 149', stroke:'#9aaec6', 'stroke-width':'12', 'stroke-linecap':'round'}, g);
     make('path', {d:'M42 117L48 149', stroke:'#9aaec6', 'stroke-width':'12', 'stroke-linecap':'round'}, g);
     make('path', {d:'M-1 60L-24 95L0 126', stroke:skin, 'stroke-width':'12', 'stroke-linecap':'round', fill:'none'}, g);
-    const arm = make('g', {id:`arm${i}`}, g);
-    make('path', {d:'M51 61L78 90L72 128', stroke:skin, 'stroke-width':'12', 'stroke-linecap':'round', fill:'none'}, arm);
-    make('circle', {cx:'72', cy:'128', r:'8', fill:skin}, arm);
+    // Right hand is rendered above the jars so the press and push are visibly connected.
     make('rect', {x:'-2', y:'46', width:'54', height:'14', rx:'6', fill:'#fff', opacity:'.16'}, g);
     const name = make('text', {x:'25', y:'-18', 'text-anchor':'middle', fill:'#e9f6ff', 'font-size':'12', 'font-weight':'800'}, g);
     name.textContent = `OPERATOR ${i + 1}`;
     const note = make('text', {x:'25', y:'-2', 'text-anchor':'middle', fill:'#94b3c8', 'font-size':'10'}, g);
     note.textContent = '1 line each';
-    operatorRefs.push({arm, mode:'idle'});
+    operatorRefs.push({skin, x:stationX - 74, y:y - 92, mode:'idle'});
   }
 
   jarsLayer = make('g', {id:'jarsLayer'}, scene);
+  // Hands overlay jar bodies while the operator touches and moves them.
+  for(const ref of operatorRefs){
+    const overlay = make('g', {transform:`translate(${ref.x},${ref.y})`}, scene);
+    ref.path = make('path', {d:'M51 61 L78 72 L72 82', stroke:ref.skin, 'stroke-width':'12', 'stroke-linecap':'round', fill:'none'}, overlay);
+    ref.hand = make('circle', {cx:'72', cy:'82', r:'8', fill:ref.skin}, overlay);
+  }
 }
 
-function setOperatorMode(line, mode){
+function setOperatorMode(line, mode, progress=0){
   const ref = operatorRefs[line];
   if (!ref) return;
   ref.mode = mode;
-  const map = {
-    idle: 'translate(0,0)',
-    press: 'translate(0,14)',
-    push: 'translate(26,20)'
-  };
-  ref.arm.setAttribute('transform', map[mode] || map.idle);
+  const p = Math.min(Math.max(progress,0),0.62);
+  const dx = mode==='push' ? (rejectBinX + 22 - stationX) * p : 0;
+  const dy = mode==='push' ? 92 * p : (mode==='press' ? 7 : 0);
+  // Articulate from the shoulder rather than translating the entire arm.
+  ref.path.setAttribute('d', `M51 61 L${78 + dx*.45} ${72 + dy*.5} L${72 + dx} ${82 + dy}`);
+  ref.hand.setAttribute('cx',String(72 + dx));
+  ref.hand.setAttribute('cy',String(82 + dy));
 }
 
 function clearActions(){
@@ -362,7 +370,7 @@ function addJar(type){
 }
 
 function changeOperators(delta){
-  operators = Math.max(1, Math.min(8, operators + delta));
+  operators = Math.max(1, Math.min(22, operators + delta));
   resetSimulation(`Simulation reset. ${operators} operator${operators===1?'':'s'} now manage ${lineCount()} production line${lineCount()===1?'':'s'}.`);
 }
 
@@ -381,7 +389,7 @@ function resetSimulation(message='Simulation reset. Operators are ready.'){
   // Seed one jar per line for immediate motion
   for (let i = 0; i < lineCount(); i++) {
     const jar = buildJar(i, false);
-    jar.x -= i * 80;
+    jar.x -= (i % 3) * 28;
     placeJar(jar);
   }
 }
@@ -389,8 +397,15 @@ function resetSimulation(message='Simulation reset. Operators are ready.'){
 function updateJar(jar, dt){
   const speed = 110;
   if (jar.state === 'move') {
-    jar.x += speed * dt;
-    if (jar.x >= stationX) {
+    // Queue jars rather than overlapping the single operator on this line.
+    const busy = jars.some(other => other !== jar && other.line === jar.line && !other.finished &&
+       (other.state === 'inspect' || other.state === 'reject' || (other.state === 'pass' && other.x < stationX + 65)));
+    const ahead = jars.filter(other => other !== jar && other.line === jar.line && !other.finished && other.x > jar.x);
+    const nearest = ahead.length ? Math.min(...ahead.map(other => other.x)) : Infinity;
+    const limit = busy ? stationX - 54 : stationX;
+    const newX = Math.min(jar.x + speed * dt, nearest - 54, limit);
+    jar.x = Math.max(jar.x, newX);
+    if (jar.x >= stationX && !busy) {
       jar.x = stationX;
       jar.state = 'inspect';
       jar.timer = 0;
@@ -425,22 +440,21 @@ function updateJar(jar, dt){
       jar.node.remove();
     }
   } else if (jar.state === 'reject') {
+    // The jar is pushed sideways from the station into the nearby collection box.
     jar.timer += dt;
-    if (jar.timer < 0.22) {
-      jar.x = stationX + jar.timer * 45;
-      jar.y = laneY(jar.line) + 48;
-    } else {
-      const p = Math.min(1, (jar.timer - 0.22) / 0.9);
-      jar.x = stationX + 10 + p * (rejectBinX - stationX + 12);
-      jar.y = laneY(jar.line) + 48 + p * 92;
-      jar.angle = p * 18;
-      if (p >= 1) {
-        jar.finished = true;
-        rejected++;
-        updateStats();
-        setOperatorMode(jar.line, 'idle');
-        jar.node.remove();
-      }
+    const p = Math.min(1, jar.timer / 1.05);
+    const smooth = p*p*(3-2*p);
+    jar.x = stationX + (rejectBinX + 22 - stationX) * smooth;
+    jar.y = laneY(jar.line) + 48 + 94 * smooth;
+    jar.angle = smooth * 12;
+    // The operator follows the jar during the push, then releases it into the bin.
+    setOperatorMode(jar.line, p < .68 ? 'push' : 'idle', smooth);
+    if (p >= 1) {
+      jar.finished = true;
+      rejected++;
+      updateStats();
+      setOperatorMode(jar.line, 'idle');
+      jar.node.remove();
     }
   }
   placeJar(jar);
